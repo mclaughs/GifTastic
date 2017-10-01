@@ -25,23 +25,27 @@
       <!-- where rendered buttons appear -->
       <div class=col-md-4>
         <form id="team-form">
+          <!-- The select box attempted below didn't work.  Why? -->
+          <!-- <select id="add-team" type="submit">
+            <option value="Baltimore Orioles">Baltimore Orioles</option>
+            <option value="Boston Red Sox">Boston Red Sox</option>
+          </select> -->
           <input type="text" id="team-input" /><br />
           <!-- button triggers addition of new MLB team -->
           <input id="add-team" type="submit" value="Select Another MLB Team">
         </form>
+
         <h6>Chicago Cubs, Cincinnati Reds, Milwaukee Brewers, Pittsburgh Pirates, St. Louis Cardinals</h6>
         <h6>Arizona Diamondbacks, Colorado Rockies, Los Angeles Dodgers, San Diego Padres, San Francisco Giants</h6>
         <h6>Baltimore Orioles, Boston Red Sox, NY Yankees, Tampa Bay Rays, Toronto Blue Jays</h6>
         <h6>Minnesota Twins, Cleveland Indians, Houston Astros, Chicago White Sox, Detroit Tigers</h6>
         <h6>Anaheim Angels, Houston Astros, Oakland Athletics, Seattle Mariners, Texas Rangers</h6>
+
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-md-2"></div>
-      <div class="col-md-8" id="teams-view"></div>
-      <div class="col-md-2"></div>
-    </div>
+    <div class="row" id=teams-view></div>
+
   </div>
 
   <script type="text/javascript">
@@ -63,7 +67,7 @@
       }).done(function(response) {
         // Store the data from the AJAX request in the results variable.
         var results = response.data;
-
+        console.log(results);
         //loop through the results array
         for (var i = 0; i < results.length; i++) {
           // Create a div to hold the team.
@@ -71,7 +75,7 @@
           // Create and store an image tag.
           var teamImage = $("<img>");
           // Set the src attribute of the image to a property retrieved from results.
-          teamImage.attr("src", results[i].images.fixed_height.url);
+          teamImage.attr("src", results[i].images.downsized_still.url);
           // Store the rating data-name.
           var rating = results[i].rating;
           // Create an element to display the rating.
@@ -126,7 +130,6 @@
 
     // Add functionality to pause / restart Giphs
     // Add functionality to clear textbox.
-
   </script>
 
 </body>
