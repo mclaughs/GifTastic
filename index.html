@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <!--  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css">-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <title>GifTastic</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+  </script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/4.4.0/firebase.js"></script> -->
+</head>
+
+<body>
+
+  <div class=container>
+    <div class="row">
+      <!-- where team buttons appear -->
+      <h1>Major League Baseball Team Giphys</h1>
+      <div class="col-md-8" id="buttons-view">
+
+      </div>
+      <!-- where rendered buttons appear -->
+      <div class=col-md-4>
+        <form id="team-form">
+          <input type="text" id="team-input" /><br />
+          <!-- button triggers addition of new MLB team -->
+          <input id="add-team" type="submit" value="Select Another MLB Team">
+        </form>
+        <h6>Chicago Cubs, Cincinnati Reds, Milwaukee Brewers, Pittsburgh Pirates, St. Louis Cardinals</h6>
+        <h6>Arizona Diamondbacks, Colorado Rockies, Los Angeles Dodgers, San Diego Padres, San Francisco Giants</h6>
+        <h6>Baltimore Orioles, Boston Red Sox, NY Yankees, Tampa Bay Rays, Toronto Blue Jays</h6>
+        <h6>Minnesota Twins, Cleveland Indians, Houston Astros, Chicago White Sox, Detroit Tigers</h6>
+        <h6>Anaheim Angels, Houston Astros, Oakland Athletics, Seattle Mariners, Texas Rangers</h6>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8" id="teams-view"></div>
+      <div class="col-md-2"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    // Initial array of MLB teams
+    var teams = ["Atlanta Braves", "Miami Marlins", "NY Mets", "Philadelphia Phillies", "Washington Nationals"]
+
+    // displayTeam function re-renders the HTML to display requested content
+    function displayTeam() {
+
+      var team = $(this).attr("data-name");
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        team + "&api_key=E8COV2QeCXggkSG1TjkADH7k0aiVWCfz&limit=10";
+
+      // here is the ajax call for the requested MLB team
+
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      }).done(function(response) {
+        // Store the data from the AJAX request in the results variable.
+        var results = response.data;
+
+        //loop through the results array
+        for (var i = 0; i < results.length; i++) {
+          // Create a div to hold the team.
+          var teamDiv = $("<div class='team'>");
+          // Create and store an image tag.
+          var teamImage = $("<img>");
+          // Set the src attribute of the image to a property retrieved from results.
+          teamImage.attr("src", results[i].images.fixed_height.url);
+          // Store the rating data-name.
+          var rating = results[i].rating;
+          // Create an element to display the rating.
+          var p = $("<p>").text("Rating: " + rating);
+          // Display image and the rating.
+          teamDiv.append(teamImage);
+          teamDiv.append(p);
+          // Display the team recalled above the previous recalled teams.
+          $("#teams-view").prepend(teamDiv);
+        }
+      });
+
+    }
+
+    function renderButtons() {
+
+      // Prevent repeat buttons.
+      $("#buttons-view").empty();
+
+      // Loop through array of first 5 teams.
+      for (var i = 0; i < teams.length; i++) {
+
+        // Dynamically generate buttons for each team in the array.
+        var a = $("<button>");
+        // Add a class to the team button.
+        a.addClass("team");
+        // Add a data attribute the indexed team button.
+        a.attr("data-name", teams[i]);
+        // Provide the button text
+        a.text(teams[i]);
+        // Add the button to the buttons-view div.
+        $("#buttons-view").append(a);
+      }
+    }
+
+    // This function handles events where a team button is clicked
+    $("#add-team").on("click", function(event) {
+      event.preventDefault();
+      // This line grabs the input from the textbox
+      var team = $("#team-input").val().trim();
+      // Add new team to button array.
+      teams.push(team);
+      // Clear textbox.  Below didn't work.
+      //$("#team-input").empty();
+
+      renderButtons();
+
+    });
+
+    $(document).on("click", ".team", displayTeam);
+    renderButtons();
+
+    // Add functionality to pause / restart Giphs
+    // Add functionality to clear textbox.
+
+  </script>
+
+</body>
+
+</html>
