@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1" /> -->
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
+  <!-- <link rel="stylesheet" type="text/css" href="css/reset.css"> -->
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <title>GifTastic</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+  </script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/4.4.0/firebase.js"></script> -->
+</head>
+
+<body>
+  <h1>Major Leage Baseball GifTastic</h1>
+  <div id="team-buttons"></div>
+
+  <form id="team-form">
+    <label for="team-input"></label>
+    <input type="text" id="team-input" /><br />
+    <!-- button triggers addition of new MLB team -->
+    <input id="add-team" type="submit" value="Select Another MLB Team" />
+  </form>
+
+  <div id="teams"></div>
+
+  <script type="text/javascript">
+
+  $(document).ready(function() {
+    // Initial array of MLB teams
+    var teams = ["Atlanta Braves", "Miami Marlins", "NY Mets", "Philadelphia Phillies", "Washington Nationals"];
+
+    function renderButtons(arrayToUse, classToAdd, areaToAppend) {
+      // Prevent repeat buttons.
+      $(areaToAppend).empty();
+      // Loop through array of first 5 .
+      for (var i = 0; i < arrayToUse.length; i++) {
+        // Dynamically generate buttons for each team in the array.
+        var a = $("<button>");
+        // Add a class to the team button.
+        a.addClass(classToAdd);
+        // Add a data attribute the indexed team button.
+        a.attr("data-type", arrayToUse[i]);
+        // Provide the button text
+        a.text(arrayToUse[i]);
+        // Add the button to the buttons-view div.
+        $(areaToAppend).append(a);
+      }
+    };
+
+    $(document).on("click", ".team-button", function() {
+      $("#teams").empty();
+      $(".team-button").removeClass("active");
+      $(this).addClass("active");
+
+      var type = $(this).attr("data-type");
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        type + "&api_key=E8COV2QeCXggkSG1TjkADH7k0aiVWCfz&limit=10";
+
+      // here is the ajax call for the requested MLB team
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      }).done(function(response) {
+        // Store the data from the AJAX request in the results variable.
+        var results = response.data;
+        console.log(results);
+        //loop through the results array
+        for (var i = 0; i < results.length; i++) {
+          // Create a div to hold the team.
+          var teamDiv = $("<div class=\"team\">");
+          // Create and variables for image tag, still/animated images and rating.
+          var rating = results[i].rating;
+          var p = $("<p>").text("Rating: " + rating);
+
+          var animated = results[i].images.downsized.url;
+          var still = results[i].images.downsized_still.url;
+
+          var teamImage = $("<img>");
+          teamImage.attr("src", still);
+          teamImage.attr("data-still", still);
+          teamImage.attr("data-animate", animated);
+          teamImage.attr("data-state", still);
+          teamImage.addClass("team-image");
+
+          teamDiv.append(teamImage);
+          teamDiv.append(p);
+
+          $("#teams").append(teamDiv);
+        }
+      });
+    });
+
+    $(document).on("click", ".team-image", function() {
+
+      var state = $(this).attr("data-state");
+
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+      }
+      else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+      }
+    });
+
+
+    $("#add-team").on("click", function(event) {
+
+      event.preventDefault();
+      var newTeam = $("input").eq(0).val();
+
+      if (newTeam.length > 2) {
+        teams.push(newTeam);
+      }
+      renderButtons(teams, "team-button", "#team-buttons");
+
+    });
+
+    renderButtons(teams, "team-button", "#team-buttons");
+
+  });
+    // Add functionality to clear textbox.
+  </script>
+
+</body>
+
+</html>
